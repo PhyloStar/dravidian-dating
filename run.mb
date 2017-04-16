@@ -1,0 +1,30 @@
+exec drav_lsi.nex;
+delete KAIKADI;
+constraint root = 1-.;
+[constraint TamMalKaik = 16-18;]
+constraint TamMal = 16-17;
+constraint Telugu = 12-14;
+constraint north = 6-8;
+
+lset rates=gamma coding=noabsencesites;
+prset clockratepr = lognorm(-7,0.6);
+prset clockvarpr = igr;
+prset igrvarpr = exp(10);
+
+calibrate root = uniform(3500,35000) TamMal = uniform(700,1100);
+
+prset nodeagepr = calibrated;
+prset brlenspr = clock:fossilization;
+
+prset fossilizationpr = fixed(0);
+prset sampleprob = 0.225;
+prset samplestrat = random;
+prset treeagepr = uniform(3500,35000);
+prset topologypr = constraint(TamMal, Telugu, north);
+
+
+mcmcp ngen = 500000 samplefr=500;
+mcmcp filename = drav.birthdeath printfr = 1000 diagnfr = 5000;
+mcmc;
+sump;
+sumt;
