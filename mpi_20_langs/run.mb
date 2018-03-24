@@ -2,15 +2,20 @@ exec drav.nex;
 
 constraint root = 1-.;
 constraint TamMal = Malayalam Tamil;
-constraint Telugu = Gondi Koya Kuwi Telugu;
+constraint south2 = Gondi Koya Kuwi Telugu;
 constraint north = Brahui Kurukh Malto;
+constraint south1 = Badga Toda Kota Betta_Kurumba Tamil Malayalam Yeruva Kodava Tulu Kannada;
 
 lset rates=gamma coding=noabsencesites;
 prset clockratepr = lognorm(-7,0.6);
 prset clockvarpr = igr;
 prset igrvarpr = exp(10);
 
-calibrate TamMal = uniform(800,1200);
+calibrate TamMal = uniform(800,1200) south1 = uniform(2250,10000);
+
+[calibrate south2 = uniform(1400,10000);
+calibrate Brahui = uniform(0,2250);
+]
 
 [Birth-Death prior]
 prset nodeagepr = calibrated;
@@ -20,16 +25,15 @@ prset fossilizationpr = fixed(0);
 prset sampleprob = 0.247;
 prset samplestrat = random;
 prset treeagepr = uniform(0,10000);
-prset topologypr = constraint(TamMal, Telugu, north);
+prset topologypr = constraint(TamMal, south2, north, south1);
 
-
-mcmcp ngen = 5000000 samplefr=500;
-mcmcp filename = drav.birthdeath printfr = 1000 diagnfr = 5000 stoprule=0.005;
+mcmcp ngen = 10000000 samplefr=500;
+mcmcp filename = dravBirthdeath printfr = 1000 diagnfr = 5000;
 mcmc;
 sump;
 sumt;
 
-[Uniform prior]
+[[Uniform prior]
 prset nodeagepr = calibrated;
 prset brlenspr = clock:uniform;
 
@@ -37,25 +41,25 @@ prset fossilizationpr = fixed(0);
 prset sampleprob = 0.247;
 prset samplestrat = random;
 prset treeagepr = uniform(0,10000);
-prset topologypr = constraint(TamMal, Telugu, north);
+prset topologypr = constraint(TamMal, south2, north, south1);
 
 
-mcmcp ngen = 5000000 samplefr=500;
-mcmcp filename = drav.uniform printfr = 1000 diagnfr = 5000 stoprule=0.005;
+mcmcp ngen = 10000000 samplefr=500;
+mcmcp filename = dravUniform printfr = 1000 diagnfr = 5000;
 mcmc;
 sump;
-sumt;
+sumt;]
 
 
-[Coalescence prior]
+[[Coalescence prior]
 prset nodeagepr = calibrated;
 prset brlenspr = clock:coalescence [clock:uniform];
 prset popsizepr = gamma(1,0.01);
-prset topologypr = constraint(TamMal, Telugu, north);
+prset topologypr = constraint(TamMal, south2, north, south1);
 
 
 mcmcp ngen = 5000000 samplefr=500;
-mcmcp filename = drav.coal printfr = 1000 diagnfr = 5000 stoprule=0.005;
+mcmcp filename = dravCoal printfr = 1000 diagnfr = 5000;
 mcmc;
 sump;
-sumt;
+sumt;]
